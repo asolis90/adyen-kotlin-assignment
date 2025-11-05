@@ -36,7 +36,7 @@ class Change {
         } else {
             map[element] = newCount
         }
-        total += element.minorValue * count
+        total += element.minorValue.toLong() * count
         return this
     }
 
