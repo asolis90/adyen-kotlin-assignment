@@ -15,12 +15,12 @@ class CashRegister(private val change: Change) {
      * @throws TransactionException If the transaction cannot be performed.
      */
     fun performTransaction(price: Long, amountPaid: Change): Change {
-        if(price == 0L) {
-            throw TransactionException("Transaction failed: Invalid Price.")
+        if (price == 0L) {
+            throw TransactionException.InvalidPrice
         }
         // Check if total amount paid is less than the price
         if (amountPaid.total < price) {
-            throw TransactionException("Transaction failed: Insufficient payment.")
+            throw TransactionException.InsufficientPayment
         }
 
         val changeDue = amountPaid.total - price
@@ -98,11 +98,18 @@ class CashRegister(private val change: Change) {
 
         // if the remaining change is not zero, we cannot provide exact change
         if (remaining > 0) {
-            throw TransactionException("Transaction failed: Cannot provide exact change.")
+            throw TransactionException.NotEnoughChange
         }
 
         return result
     }
 
-    class TransactionException(message: String, cause: Throwable? = null) : Exception(message, cause)
+    sealed class TransactionException(message: String, cause: Throwable? = null) :
+        Exception(message, cause) {
+        object InvalidPrice : TransactionException("Transaction failed: Invalid Price.")
+        object InsufficientPayment :
+            TransactionException("Transaction failed: Insufficient payment.")
+        object NotEnoughChange :
+            TransactionException("Transaction failed: Cannot provide exact change.")
+    }
 }
